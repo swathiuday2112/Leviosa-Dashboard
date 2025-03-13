@@ -1,0 +1,122 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background:url('images/3.png') no-repeat center center;
+    background-size: cover;
+    filter: brightness(1);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 5%;
+}
+
+.titles{
+    margin-top: -42%;
+    margin-right: 85%;
+    color: aliceblue;
+    position: absolute;
+}
+
+.plans-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2%;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.plan-card {
+    background:linear-gradient(to bottom, #f4fd79, #f5f5f5);
+    filter: brightness(1.1);
+    border-radius: 3%;
+    padding: 5%;
+    width: 30%;
+    min-width: 280px;
+    box-shadow: 0 4% 6% rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+    position: relative;
+    background-size: cover;
+    color: #333;
+    height: 450px;
+}
+
+.plan-card.yearly {
+    background-color: #fffbec;
+    border: 2% solid #ff6600;
+    transform: scale(1.05);
+}
+
+.plan-card:hover {
+    transform: translateY(-5%);
+    box-shadow: 0 6% 12% rgba(0, 0, 0, 0.2);
+}
+
+.plan-card h2 {
+    font-size: 1.8rem;
+    color: #162d44;
+    margin-bottom: 3%;
+}
+
+.price {
+    font-size: 2rem;
+    color: #162d44;
+    margin: 3% 0;
+}
+
+.price span {
+    font-size: 1rem;
+    color: #615f5f;
+}
+
+.features {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 3%;
+}
+
+.features li {
+    font-size: 1.1rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.cta-btn {
+    display: inline-block;
+    width: 90%;
+    padding: 3%;
+    font-size: 1rem;
+    border: none;
+    border-radius: 2%;
+    cursor: pointer;
+    background-color: #ff6600;
+    color: #fff;
+    transition: background-color 0.3s ease;
+    margin-top: 5%;
+    text-align: center;
+}
+
+.cta-btn:hover {
+    background-color: #e65c00;
+}
+
+@media screen and (max-width: 768px) {
+    .plans-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .plan-card {
+        width: 90%;
+        max-width: 90%;
+    }
+}
+ 

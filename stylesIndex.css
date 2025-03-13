@@ -1,0 +1,198 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centers the nav horizontally */
+    align-items: center;     /* Centers the nav vertically */
+    min-height: 100vh;       /* Minimum height should be 100% of the viewport */
+    width: 100%;             /* Full width of the page */
+}
+
+.nav{
+    position: fixed;
+    top: 0;
+    display: flex;
+    justify-content: space-around;
+    width: 140%;
+    height: 100px;
+    line-height: 100px;
+    background: linear-gradient(rgba(39,39,39, 0.6), transparent);
+    z-index: 100;
+}
+.nav-logo{
+    display:flex;
+    align-items: center;
+}
+.nav-logo p{
+    color: white;
+    font-size: 25px;
+    font-weight: 600;
+    margin: 2px;
+}
+.nav-logo img {
+    width: 40px;  /* Adjust the image size */
+    height: 40px;  /* Maintain aspect ratio */
+    margin-right: 10px;  /* Space between image and text */
+    border-radius: 50%;
+}
+.nav-menu ul{
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+.nav-menu ul li{
+    list-style-type: none;
+    margin: 0 20px;
+}
+.nav-menu ul li .link{
+    text-decoration: none;
+    font-weight: 500;
+    color: #fff;
+    padding-bottom: 15px;
+    margin: 0;
+}
+.link:hover, .active{
+    border-bottom: 2px solid #fff;
+}
+/* Ensure the body fills the viewport and centers the form */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: url(images/3.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* Form box container */
+.form-box {
+    margin-top: 10%;
+    position: relative;
+    width: 100%;
+    max-width: 36%;
+    padding: 3%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.3); /* Semi-transparent background for merging effect */
+    border-radius: 10px;
+    backdrop-filter: blur(10px); /* Optional: adds a slight blur to the background */
+    margin-bottom: 5%;
+}
+
+/* Login container inside form box */
+.login-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Header for login */
+header {
+    color: #fff;
+    font-size: 30px;
+    text-align: center;
+    padding: 10px 0;
+}
+
+/* Input field styling */
+.input-field {
+    font-size: 15px;
+    background: rgba(255, 255, 255, 0.5); /* Semi-transparent to merge with the background */
+    color: #333;
+    height: 50px;
+    width: 100%;
+    padding: 0 10px 0 45px;
+    border: none;
+    border-radius: 30px;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+.input-field:hover, .input-field:focus {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+/* Submit button styling */
+.submit {
+    font-size: 15px;
+    font-weight: 500;
+    color: black;
+    height: 45px;
+    width: 100%;
+    border: none;
+    border-radius: 30px;
+    outline: none;
+    background: rgba(202, 201, 201, 0.6);
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+}
+
+.submit:hover {
+    background:  rgb(65, 104, 128);
+    box-shadow: 1px 5px 7px 1px rgba(0, 0, 0, 0.2);
+}
+
+/* Layout for "Remember me" and "Forgot password?" */
+.two-col {
+    display: flex;
+    justify-content: space-between;
+    color: #fff;
+    font-size: small;
+    margin-top: 10px;
+}
+
+.two-col .one {
+    display: flex;
+    gap: 5px;
+}
+
+.two label a {
+    text-decoration: none;
+    color: #fff;
+}
+
+.two label a:hover {
+    text-decoration: underline;
+}
+
+/* Default styling for section */
+section {
+    font-size: 1rem; /* Adjusted base font size */
+    color: #f7f1f1;
+    width: 100%;
+    max-width: 1200px;
+    padding: 50px;
+    margin-top: 20px;
+    box-sizing: border-box;
+    line-height: 1.6; /* Improves readability */
+}
+
+@media screen and (max-width: 480px) {
+    section {
+        font-size: 0.7rem; /* Further reduce font size for mobile screens */
+        padding: 20px;
+        margin-top: 10px;
+    }
+}
+
+/* Media queries for smaller screens */
+@media screen and (max-width: 768px) {
+    section {
+        font-size: 0.9rem; /* Slightly reduce font size for tablets */
+        padding: 30px;
+        margin-top: 15px;
+    }
+}

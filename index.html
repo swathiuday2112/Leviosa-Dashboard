@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="stylesIndex.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leviosa</title>
+    <link rel="icon" type="image/jpeg" href="images/Leviosa.jpg">
+</head>
+<body>
+    <div class="wrapper">
+        <nav class="nav">
+            <div class="nav-logo">
+                <img src="images/Leviosa.jpg" alt="Leviosa Logo" class="logo-image"> 
+                <p>Leviosa</p>
+            </div>
+            <div class="nav-menu">
+                <ul>
+                    <li><a href="#about" class="link active">About</a></li>
+                    <li><a href="#services" class="link active">Services</a></li>
+                </ul>
+            </div>
+        </nav>
+        <div class="form-box">
+            <div class="login-container" id="Login">
+                <div class="top">
+                    <header>Login</header>
+                </div>
+                <div class="input-box">
+                    <input type="text" id="username" class="input-field" placeholder="Username">
+                </div>
+                <div class="input-box">
+                    <input type="password" id="password" class="input-field" placeholder="Password">
+                </div>
+                <!-- Using button element instead of input with onclick -->
+                <button type="button" class="submit" id="loginBtn">Sign In</button>
+                
+                <div id="message" style="color: rgb(87, 50, 50); margin-top: 10px; text-align: center;"></div>
+                <!-- <div class="two-col">
+                    <div class="one">
+                        <input type="checkbox" id="login-check">
+                        <label for="login-check"> Remember Me</label>
+                    </div>
+                    <div class="two">
+                        <label><a href="#">Forgot password?</a></label>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+        <!-- About Section -->
+        <section id="about">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: 1.5rem;">About Leviosa</h2>
+                <p style="line-height: 1.8; text-align: justify;">
+                    Leviosa is an innovative learning platform designed to empower deaf and mute students by bridging communication gaps through technology.  
+                    With a focus on inclusivity and accessibility, Leviosa offers tools to learn Gujarati alphabets, numbers, words, and sentences.  
+                    Our platform supports interactive Mathematics and Science education, complete with sign language tutorials and writing exercises.  
+                </p>
+                <p style="line-height: 1.8; text-align: justify;">
+                    By integrating advanced features like Gujarati-to-Sign Language conversion, Speech-to-Sign Language translation, and detailed progress tracking,  
+                    Leviosa aims to revolutionize the way specially-abled students learn. Teachers, parents, and HR professionals benefit from customized solutions, making Leviosa  
+                    a comprehensive platform that supports learning, teaching, and inclusivity.  
+                </p>
+                <p style="text-align: center; margin-top: 1rem;">
+                    <em>Leviosa – Enabling the future, one sign at a time.</em>
+                </p>
+            </div>
+        </section>
+    
+        <!-- Services Section -->
+        <section id="services">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: 1.5rem;">Our Services</h2>
+                <ul style="list-style-type: none; padding: 0; line-height: 1.8;">
+                    <li>
+                        <strong>Interactive Learning for Students</strong><br>
+                        Learn Gujarati alphabets, numbers, words, and sentences. Practice Mathematics and Science with sign language tutorials and assessments.
+                    </li>
+                    <li>
+                        <strong>Sign Language Conversion</strong><br>
+                        Convert Gujarati text and speech to sign language and vice versa for seamless communication.
+                    </li>
+                    <li>
+                        <strong>Progress Tracking</strong><br>
+                        Comprehensive report cards and performance insights for students' learning progress.
+                    </li>
+                    <li>
+                        <strong>Dedicated Platforms</strong><br>
+                        <ul style="list-style-type: disc; margin-left: 2rem;">
+                            <li><strong>For Teachers</strong>: Assign exercises and track student progress.</li>
+                            <li><strong>For Parents</strong>: Aid for non-sign-language speakers to support learning.</li>
+                            <li><strong>For HR</strong>: Inclusive tools like speech-to-text for interviews.</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Accessibility</strong><br>
+                        Anytime, anywhere learning for enhanced convenience and inclusivity.
+                    </li>
+                </ul>
+                <p style="text-align: center; margin-top: 1rem;">
+                    <em>Leviosa is redefining education for the deaf and mute with inclusivity at its core!</em>
+                </p>
+            </div>
+        </section>
+    </div>
+    
+    
+
+    <script type="module">
+        // Firebase SDK Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDit0ybvUFYef9el151N2XEREY2a1JS6bg",
+            authDomain: "shakabooo.firebaseapp.com",
+            projectId: "shakabooo",
+            storageBucket: "shakabooo.appspot.com",
+            messagingSenderId: "554324767425",
+            appId: "1:554324767425:web:c48805463d7a51038a1a40"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Login Handler
+        async function handleLogin() {
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const messageElement = document.getElementById("message");
+
+            if (!username || !password) {
+                messageElement.textContent = "Please fill in all fields.";
+                return;
+            }
+            
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, username, password);
+                messageElement.textContent = "";
+                // Extract domain for dashboard redirection
+                const institutionDomain = username.split("@")[1].split(".")[0]; // e.g., "kct" from "admin@kct.com"
+                window.location.href = `dashboard.html?institution=${institutionDomain}`;
+            } catch (error) {
+                console.error("Login failed:", error);
+                messageElement.textContent = "Invalid credentials.";
+            }
+        }
+
+        // Add Event Listener for the Sign In Button
+        document.getElementById("loginBtn").addEventListener("click", handleLogin);
+    </script>
+</body>
+</html>

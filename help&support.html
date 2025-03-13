@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help & Support | Leviosa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet"> <!-- Google font for styling -->
+    <style>
+        /* Basic Styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+            background-color: #2C3E50;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .header img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-left: 10px;
+        }
+
+        .help-support-page {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+            background-color: #ffffff;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .help-support-page h1 {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .feedback form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feedback form input,
+        .feedback form textarea {
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .feedback form button {
+            padding: 12px;
+            background-color: #737678;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 15%;
+        }
+
+        .feedback form button:hover {
+            background-color: #3f4243;
+        }
+
+        @media screen and (max-width: 768px) {
+            .feedback form button {
+                width: 30%; /* Adjust the button width to be 80% of the parent container on smaller screens */
+                font-size: 0.9rem; /* Slightly reduce the font size on smaller screens */
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .feedback form button {
+                width: 40%; /* Further reduce the width on very small screens */
+                font-size: 0.8rem; /* Reduce font size further if necessary */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="images/Leviosa.jpg" alt="Leviosa Logo"> 
+        <a onclick="window.history.back()" style="cursor: pointer; color: aliceblue"><h1>Leviosa</h1></a>
+    </div>
+
+    <div class="help-support-page">
+        <h1>Help & Support</h1>
+        
+        <!-- Contact Support Section -->
+        <section class="contact-support">
+            <h2>Contact Support</h2>
+            <p>Email: <a href="mailto:support@leviosa.com">support@leviosa.com</a></p>
+            <p>Phone: +91 9361936039</p>
+            <p>Support Hours: Monday–Friday, 9 AM to 6 PM</p>
+        </section>
+
+        <!-- Frequently Asked Questions Section -->
+        <section class="faq">
+            <h2>Frequently Asked Questions</h2>
+            <div>
+                <h3>Accounts and Login Issues</h3>
+                <p><strong>Q: How to reset the password?</strong></p>
+                <p>A: Go to the settings page and click "Change Password".</p>
+                <p><strong>Q: What if I forgot my login ID?</strong></p>
+                <p>A: Contact support to retrieve your login ID.</p>
+            </div>
+            <div>
+                <h3>Account Management</h3>
+                <p><strong>Q: How to add new admins?</strong></p>
+                <p>A: Go to the settings page and use the "Add Admin" form.</p>
+                <p><strong>Q: How to create new accounts?</strong></p>
+                <p>A: Go to the Create Users in dashboard nav-bar and create accounts for faculty/student/parent.</p>
+                <p><strong>Q: How to change password of an user in case if he/she forgets?</strong></p>
+                <p>A: Admin can't change the password of Leviosa app users directly, instead delete the account and create new account.</p>
+            </div>
+        </section>
+
+        <!-- Troubleshooting Section -->
+        <section class="troubleshooting">
+            <h2>Troubleshooting</h2>
+            <p><strong>Issue:</strong> The application is running slowly.</p>
+            <p><strong>Solution:</strong> Try clearing your browser cache or restarting the app.</p>
+            
+            <p><strong>Issue:</strong> The app is crashing when I try to open it.</p>
+            <p><strong>Solution:</strong> Ensure that your device has the latest version of the app.</p>
+            
+            <p><strong>Issue:</strong> I can't upload any files or assignments.</p>
+            <p><strong>Solution:</strong> Check your internet connection and ensure that the file size is within the allowed limits.</p>
+            
+            <p><strong>Issue:</strong> I am unable to create or edit assignments as a teacher.</p>
+            <p><strong>Solution:</strong> Make sure you are logged in with the correct admin or teacher account. If the problem continues, contact the system administrator or support for further assistance.</p>
+            
+            <p><strong>Issue:</strong> Some sections of the app are not loading.</p>
+            <p><strong>Solution:</strong> This could be due to a temporary issue with the app’s servers. Try reloading the page or app. If the problem persists, contact support for help.</p>
+        </section>
+
+        <!-- Feedback Section -->
+        <section class="feedback">
+            <h2>Feedback and Suggestions</h2>
+            <form id="feedback-form">
+                <label for="feedback-name">Name</label>
+                <input type="text" id="feedback-name" required>
+                
+                <label for="feedback-email">Email</label>
+                <input type="email" id="feedback-email" required>
+                
+                <label for="feedback-message">Message</label>
+                <textarea id="feedback-message" required></textarea>
+                
+                <button type="submit">Submit Feedback</button>
+            </form>
+        </section>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // JavaScript for feedback form submission, add your logic for form handling here
+        document.getElementById('feedback-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            alert('Thank you for your feedback!');
+            document.getElementById('feedback-form').reset();
+        });
+    </script>
+</body>
+</html>

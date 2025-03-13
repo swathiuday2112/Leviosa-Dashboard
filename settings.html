@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Settings</title>
+  <link rel="stylesheet" href="settings.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script defer src="/__/firebase/11.0.2/firebase-app-compat.js"></script>
+  <script defer src="/__/firebase/11.0.2/firebase-firestore-compat.js"></script>
+  <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+</head>
+<body>
+    
+    <div class="settings-container">
+        <a onclick="window.history.back()"; style="cursor: pointer"><i class="material-icons">arrow_back</i></a>
+        <!-- Header -->
+        <header class="settings-header">
+        <img src="images/Leviosa.jpg" alt="Institution Logo" class="institution-logo">
+        <h1>Admin Settings</h1>
+        </header>
+
+        <!-- Add New Admin Section -->
+        <section class="add-admin-section">
+        <h2>Add New Admin</h2>
+        <p id="addMessage" class="message"></p>
+        <form id="add-admin-form" onsubmit="handleAdminCreation(event)">
+            <input type="email" id="adminLoginId" placeholder="Enter Login ID" required>
+            <button type="submit">Add Admin</button>
+        </form>
+        </section>
+
+        <section class="existing-admins-section">
+            <h2>Existing Admins</h2>
+            <ul id="admin-list">
+            </ul>
+        </section>
+        <br><br>
+        <!-- Change Password Section -->
+        <section class="change-password-section">
+        <h2>Change Password</h2>
+        <p id="message"></p>
+        <form id="change-password-form">
+            <div class="password-container">
+                <label for="current-password">Current Password</label>
+                <input type="password" id="current-password" placeholder="Enter current password" required>
+                <i class="toggle-password fas fa-eye" id="toggle-current-password"></i>
+            </div>
+
+            <div class="password-container">
+                <label for="new-password">New Password</label>
+                <input type="password" id="new-password" placeholder="Enter new password" required>
+                <i class="toggle-password fas fa-eye" id="toggle-new-password"></i>
+            </div>
+    
+            <div class="password-container">
+                <label for="confirm-password">Confirm New Password</label>
+                <input type="password" id="confirm-password" placeholder="Re-enter new password" required>
+                <i class="toggle-password fas fa-eye" id="toggle-confirm-password"></i>
+            </div>
+
+            <button type="submit" style="width: 27%">Change Password</button>
+        </form>
+        </section>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDit0ybvUFYef9el151N2XEREY2a1JS6bg",
+            authDomain: "shakabooo.firebaseapp.com",
+            projectId: "shakabooo",
+            storageBucket: "shakabooo.appspot.com",
+            messagingSenderId: "554324767425",
+            appId: "1:554324767425:web:c48805463d7a51038a1a40"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Get the selected domain from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const institutionDomain = urlParams.get('institution');
+        const extension = `${institutionDomain}.com`;
+
+        console.log(institutionDomain);
+        
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = "index.html";
+            }
+        });
+
+        const dbf = firebase.firestore();
+        const institutionRef = dbf.collection("school").doc(institutionDomain);
+
+        institutionRef.get().then((doc) => {
+            const adminEmails = doc.data().admin_emails; // Get the admin_emails array
+            const adminList = document.getElementById("admin-list");
+
+            // Clear the existing list (if any)
+            adminList.innerHTML = '';
+            // Loop through the admin_emails array and create list items dynamically
+            adminEmails.forEach((email, index) => {
+                const li = document.createElement("li");
+                li.textContent = `Admin ${index+1}: ${email}`;
+                adminList.appendChild(li);
+            });
+        }).catch((error) => {
+            console.log("Error getting document: ", error);
+        });
+
+        // Handle Secondary Admin Account Creation
+        async function handleAdminCreation(event) {
+            event.preventDefault();
+
+            const adminLoginId = document.getElementById("adminLoginId").value.trim();
+            const messageElement = document.getElementById("addMessage");
+            const defaultPassword = "Legendary123"; // Default password for the admin account
+            try {
+                // Fetch the document for the selected domain
+                const domainDocRef = doc(db, "school", institutionDomain);
+                const domainDoc = await getDoc(domainDocRef);
+                const data = domainDoc.data();
+                const adminEmails = data.admin_emails || [];
+
+                // Check if the login ID is already in the admin_emails array
+                if (adminEmails.includes(adminLoginId)) {
+                    messageElement.textContent = "Error: Admin Login ID already exists!";
+                    messageElement.style.color = "red";
+                } else if (adminEmails.length === 3) {
+                    document.getElementById("add-admin-form").reset();
+                    messageElement.textContent = "Maximum limit of 3 admins reached. Cannot add more.";
+                    messageElement.style.color = "red";
+                } else if (!adminLoginId.endsWith(extension)){
+                    messageElement.textContent = `Login ID must have domain as ${extension}`;
+                    messageElement.style.color = "red";
+                } else {
+                    // Create the admin account in Firebase Authentication
+                    //
+                    await createUserWithEmailAndPassword(auth, adminLoginId, defaultPassword);
+
+                    // Add the new login ID to the admin_emails array in Firestore
+                    messageElement.textContent = "loading...";
+                    messageElement.style.color = "grey";
+                    await updateDoc(domainDocRef, {
+                        admin_emails: arrayUnion(adminLoginId),
+                    });
+
+                    const adminList = document.getElementById("admin-list");
+                    const li = document.createElement("li");
+                    li.textContent = `Admin ${adminEmails.length+1}: ${adminLoginId}`;
+                    adminList.appendChild(li);
+
+                    // Show success message
+                    messageElement.textContent = `Account for ${adminLoginId} created successfully!`;
+                    messageElement.style.color = "green";
+
+                    // Optionally reset the form
+                    document.getElementById("add-admin-form").reset();
+
+                    // Clear the message after 5 seconds
+                    setTimeout(() => {
+                        messageElement.textContent = "";
+                    }, 5000);
+                }
+            } catch (error) {
+                console.error("Error creating admin account:", error);
+                const errorMessage = error.message || "Error creating account. Please try again.";
+                messageElement.textContent = errorMessage;
+                messageElement.style.color = "red";
+            }
+        }
+
+        // Attach event listener to form submission
+        document.getElementById("add-admin-form").addEventListener("submit", handleAdminCreation);
+    
+        async function changePasswordWithReauth(currentPassword, newPassword) {
+            const user = auth.currentUser;  // Get the currently logged-in user
+            console.log(user.email);
+            if (user) {
+                try {
+                    // Reauthenticate the user with their current password
+                    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+                    await reauthenticateWithCredential(user, credential);
+
+                    // Successfully reauthenticated, now update the password
+                    await updatePassword(user, newPassword);
+
+                    // Password updated successfully
+                    document.getElementById('message').textContent = `Password updated successfully for user ${user.email}!`;
+                    document.getElementById('message').style.color = 'green';
+                    document.getElementById("change-password-form").reset();
+                } catch (error) {
+                    // Handle errors during reauthentication or password update
+                    console.error('Error updating password:', error);
+                    document.getElementById('message').textContent = `Error updating password: ${error.message}`;
+                    document.getElementById('message').style.color = 'red';
+                }
+            } else {
+                // If no user is logged in
+                console.log('No user is currently logged in.');
+                document.getElementById('message').textContent = 'No user is currently logged in.';
+                document.getElementById('message').style.color = 'red';
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('change-password-form').addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevent form submission
+
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            // Check if new password and confirm password match
+            if (newPassword !== confirmPassword) {
+                document.getElementById('message').textContent = 'New passwords do not match.';
+                document.getElementById('message').style.color = 'red';
+                return;
+            }
+
+            // Change the password with reauthentication
+            changePasswordWithReauth(currentPassword, newPassword);
+        });
+
+        // Select all toggle icons
+        const togglePasswordIcons = document.querySelectorAll(".toggle-password");
+        // Select all toggle icons
+
+        togglePasswordIcons.forEach((icon) => {
+            icon.addEventListener("click", () => {
+                // Get the corresponding input field
+                const passwordInput = icon.previousElementSibling;
+
+                // Temporarily show the password
+                passwordInput.type = "text";
+
+                // Wait for 1 second to hide it again
+                setTimeout(() => {
+                passwordInput.type = "password";
+                }, 500); // 1 second
+            });
+        });
+    </script>
+</body>
+</html>

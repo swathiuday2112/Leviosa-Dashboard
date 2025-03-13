@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Faculty Account</title>
+    <link rel="stylesheet" href="user.css">
+    <script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <div class="nav-logo">
+        <img src="images/Leviosa.jpg" alt="Leviosa Logo" class="logo-image"> 
+        <a onclick="window.history.back()" style="cursor: pointer; color: black"><p>Leviosa</p></a>
+    </div>
+    <div class="form-container">
+        <h1 style="font-size: 200%;">Create Faculty Account</h1>
+        <form id="facultyForm">
+            <div class="form-group">
+                <label for="student-name">Faculty Name</label>
+                <input type="text" id="facultyName" name="student-name" placeholder="Enter faculty name" required>
+            </div>
+            <div class="form-group">
+                <label for="student-id">Faculty ID</label>
+                <input type="text" id="facultyLoginId" name="student-id" placeholder="Enter login ID" required>
+            </div>
+            <div class="button-group" >
+                <button type="submit" class="btn">Sign Up</button>
+            </div>
+        </form>
+        <p id="message" class="message"></p>
+    </div>
+    <div id="successPopup" class="popup">
+        <p>Account created successfully!</p>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDit0ybvUFYef9el151N2XEREY2a1JS6bg",
+            authDomain: "shakabooo.firebaseapp.com",
+            projectId: "shakabooo",
+            storageBucket: "shakabooo.appspot.com",
+            messagingSenderId: "554324767425",
+            appId: "1:554324767425:web:c48805463d7a51038a1a40"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Get the institution parameter from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedDomain = urlParams.get('institution');
+        const extension = `${selectedDomain}.com`;
+        
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = "index.html";
+            }
+        });
+
+        async function handleFacultyCreation(event) {
+            event.preventDefault();
+    
+            const facultyName = document.getElementById("facultyName").value.trim();
+            const facultyLoginId = document.getElementById("facultyLoginId").value.trim();
+            const messageElement = document.getElementById("message");
+            const defaultPassword = "Legendary123"; // Default password for the faculty account
+    
+            try {
+                // Check if the login ID already exists in Firestore
+                const userDocRef = doc(db, "school", selectedDomain, "users", facultyLoginId);
+                const userDoc = await getDoc(userDocRef);
+
+                const domainDocRef = doc(db, "school", selectedDomain);
+                const domainDoc = await getDoc(domainDocRef);
+                const data = domainDoc.data();
+                const activeUsers = data.active_users;
+                const usersBought = data.users_bought;
+    
+                if (userDoc.exists()) {
+                    // Login ID already exists
+                    messageElement.textContent = "Error: Login ID already exists! Try another.";
+                    messageElement.style.color = "red";
+                    return;
+                } 
+                if (!facultyLoginId.endsWith(extension)){
+                    messageElement.textContent = `Login ID must have domain as ${extension}`;
+                    messageElement.style.color = "red";
+                    return;
+                }
+                if (activeUsers==usersBought){
+                    messageElement.innerHTML = `
+                    User limit exceeded! Purchase our 
+                    <a href="subscription.html" style="text-decoration: underline; color: orange">subscription model</a> 
+                    to unlock 100 new users.
+                    `;
+                    messageElement.style.color = "brown";
+                    return;
+                } 
+                
+                // Create user in Firebase Authentication
+                await createUserWithEmailAndPassword(auth, facultyLoginId, defaultPassword);
+                // Increment active_users value in database
+                await updateDoc(domainDocRef, {
+                    active_users: increment(1)
+                });
+
+                // Add the new faculty login ID to Firestore
+                await setDoc(userDocRef, {
+                    name: facultyName,
+                    created_at: new Date(),
+                    role: "teacher",
+                    profile_picture: null,
+                });
+
+                // Display success message
+                messageElement.textContent = "";
+                const popup = document.getElementById("successPopup");
+                popup.style.display = "block";
+                popup.style.opacity = "1";
+
+                // Fade out and hide popup after 3 seconds
+                setTimeout(() => {
+                    popup.style.opacity = "0"; // Start fade-out
+                    setTimeout(() => {
+                        popup.style.display = "none"; // Hide after fade-out
+                    }, 500); // Wait for the fade-out transition to complete
+                }, 3000); // Display for 3 seconds before fading
+
+                // Optionally reset the form
+                document.getElementById("facultyForm").reset();
+                
+            } catch (error) {
+                console.error("Error creating faculty account:", error);
+                messageElement.textContent = "Error creating account. Please try again.";
+                messageElement.style.color = "red";
+            }
+        }
+    
+        // Attach event listener to form submission
+        document.getElementById("facultyForm").addEventListener("submit", handleFacultyCreation);
+    </script>
+</body>
+</html>

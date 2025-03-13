@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <link rel="stylesheet" href="user.css">
+    <script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.2/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <div class="nav-logo">
+        <img src="images/Leviosa.jpg" alt="Leviosa Logo" class="logo-image"> 
+        <a onclick="window.history.back()" style="cursor: pointer; color: black"><p>Leviosa</p></a>
+    </div>
+    <div class="form-container">
+        <h1>Create Account</h1>
+        <form id="studentParentForm">
+            <div class="form-group">
+                <label for="student-name">Student Name</label>
+                <input type="text" id="studentName" name="student-name" placeholder="Enter student name" required>
+            </div>
+            <div class="form-group">
+                <label for="roll-no">Roll Number</label>
+                <input type="text" id="studentRollNo" name="roll-no" placeholder="Enter roll number" required>
+            </div>
+            <div class="form-group">
+                <label for="student-id">Student Login ID</label>
+                <input type="text" id="studentLoginId" name="student-id" placeholder="Enter student ID" required>
+            </div>
+            <div class="form-group">
+                <label for="parent-name">Parent Name</label>
+                <input type="text" id="parentName" name="parent-name" placeholder="Enter parent name" required>
+            </div>
+            <div class="form-group">
+                <label for="parent-id">Parent Login ID</label>
+                <input type="text" id="parentLoginId" name="parent-id" placeholder="Enter parent ID" required>
+            </div>
+            <div class="button-group">
+                <button type="submit" class="btn">Sign Up</button>
+            </div>
+        </form>
+        <p id="message" class="message"></p>
+    </div>
+    <div id="successPopup" class="popup">
+        <p>Accounts created for student and parent successfully.</p>
+    </div>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc, writeBatch, serverTimestamp, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+    
+        const firebaseConfig = {
+            apiKey: "AIzaSyDit0ybvUFYef9el151N2XEREY2a1JS6bg",
+            authDomain: "shakabooo.firebaseapp.com",
+            projectId: "shakabooo",
+            storageBucket: "shakabooo.appspot.com",
+            messagingSenderId: "554324767425",
+            appId: "1:554324767425:web:c48805463d7a51038a1a40"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Get the institution parameter from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedDomain = urlParams.get('institution');
+        const extension = `${selectedDomain}.com`;
+        console.log(selectedDomain);
+        
+        auth.onAuthStateChanged((user) => {
+            if (!user) {
+                window.location.href = "index.html";
+            }
+        });
+
+        async function handleStudentAndParentCreation(event) {
+            event.preventDefault();
+    
+            const studentName = document.getElementById("studentName").value.trim();
+            const studentRollNo = document.getElementById("studentRollNo").value.trim();
+            const studentLoginId = document.getElementById("studentLoginId").value.trim();
+            const parentName = document.getElementById("parentName").value.trim();
+            const parentLoginId = document.getElementById("parentLoginId").value.trim();
+            const messageElement = document.getElementById("message");
+    
+            const defaultPassword = "Legendary123"; // Default password for new accounts
+    
+            try {
+                // References for checking existing documents
+                const studentDocRef = doc(db, "school", selectedDomain, "users", studentLoginId);
+                const parentDocRef = doc(db, "school", selectedDomain, "users", parentLoginId);
+    
+                // Check if the documents already exist
+                const [studentDoc, parentDoc] = await Promise.all([
+                    getDoc(studentDocRef),
+                    getDoc(parentDocRef),
+                ]);
+    
+                if (studentDoc.exists()) {
+                    messageElement.textContent = `Error: The student login ID "${studentLoginId}" already exists.`;
+                    messageElement.style.color = "red";
+                    return;
+                }
+    
+                if (parentDoc.exists()) {
+                    messageElement.textContent = `Error: The parent login ID "${parentLoginId}" already exists.`;
+                    messageElement.style.color = "red";
+                    return;
+                }
+                
+                if (!studentLoginId.endsWith(extension) || !parentLoginId.endsWith(extension)){
+                    messageElement.textContent = `Login ID must have domain as ${extension}`;
+                    messageElement.style.color = "red";
+                    return;
+                }
+
+                const domainDocRef = doc(db, "school", selectedDomain);
+                const domainDoc = await getDoc(domainDocRef);
+                const activeUsers = domainDoc.data().active_users;
+                const usersBought = domainDoc.data().users_bought;
+
+                if((activeUsers+1)>=usersBought){
+                    messageElement.innerHTML = `
+                    User limit exceeded! Purchase our 
+                    <a href="subscription.html" style="text-decoration: underline; color: orange">subscription model</a> 
+                    to unlock 100 new users.
+                    `;
+                    messageElement.style.color = "brown";
+                    return;
+                }
+                // Create accounts in Firebase Authentication
+                await Promise.all([
+                    createUserWithEmailAndPassword(auth, studentLoginId, defaultPassword),
+                    createUserWithEmailAndPassword(auth, parentLoginId, defaultPassword),
+                ]);
+
+                await updateDoc(domainDocRef, {
+                    active_users: increment(2)
+                });
+    
+                // Use a Firestore batch to ensure atomicity
+                const batch = writeBatch(db);
+    
+                // Data for the student's document
+                const studentData = {
+                    created_at: new Date(),
+                    name: studentName,
+                    role: "student",
+                    rollno: studentRollNo,
+                    profile_picture: null,
+                };
+    
+                // Add the student's data to the batch
+                batch.set(studentDocRef, studentData);
+    
+                // Data for the parent's document
+                const parentData = {
+                    created_at: serverTimestamp(),
+                    name: parentName,
+                    role: "parent",
+                    ward_username: studentLoginId,
+                };
+    
+                // Add the parent's data to the batch
+                batch.set(parentDocRef, parentData);
+    
+                // Commit the batch
+                await batch.commit();
+    
+                // Display success message
+                messageElement.textContent = "";
+                const popup = document.getElementById("successPopup");
+                popup.style.display = "block";
+                popup.style.opacity = "1";
+
+                // Fade out and hide popup after 3 seconds
+                setTimeout(() => {
+                    popup.style.opacity = "0"; // Start fade-out
+                    setTimeout(() => {
+                        popup.style.display = "none"; // Hide after fade-out
+                    }, 500); // Wait for the fade-out transition to complete
+                }, 3000); // Display for 3 seconds before fading
+    
+                // Optionally reset the form
+                document.getElementById("studentParentForm").reset();
+            } catch (error) {
+                console.error("Error creating student and parent accounts:", error);
+                messageElement.textContent = "Failed to create accounts. Please try again.";
+                messageElement.style.color = "red";
+            }
+        }
+    
+        // Attach event listener to form submission
+        document
+            .getElementById("studentParentForm")
+            .addEventListener("submit", handleStudentAndParentCreation);
+    </script>
+</body>
+</html>
