@@ -24,3 +24,6 @@ Leviosa Dashboard is an admin panel designed for managing the **Leviosa Learning
 - Admins can log in using their credentials.
 - The dashboard provides options to manage users, view student reports, and monitor system analytics.
 - Secure authentication ensures only authorized personnel access the admin panel.
+
+
+Check out the live demo - https://shakabooo.web.app/
