@@ -15,11 +15,6 @@ Leviosa Dashboard is an admin panel designed for managing the **Leviosa Learning
 - **Authentication**: Firebase Authentication
 - **Hosting**: Firebase Hosting
 
-## Installation & Setup
-### Prerequisites
-- Node.js & npm installed (if React is used)
-- Firebase account set up
-
 ## Usage
 - Admins can log in using their credentials.
 - The dashboard provides options to manage users, view student reports, and monitor system analytics.
